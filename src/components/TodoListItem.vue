@@ -1,5 +1,7 @@
 <script setup>
 import { computed, onMounted, ref } from "@vue/runtime-core";
+import printTodoItem from "../utils/printTodoItem";
+import { test } from "../utils/printTodoItem";
 
 //date intrare - proprietati
 //by default - toate props sunt reactive!!
@@ -17,7 +19,8 @@ const emit = defineEmits(['todoItemDeleted', 'todoItemCompleted']);
 //computed este reactive!!
 //monitorizeaza, si utilizam automat valorile actuale
 //completed il modificam in afara, dar valoarea noua nu se intoarce :(
-const newTitle = computed(() => `${props.id} . ${props.title}[${props.completed}]`);
+//const newTitle = computed(() => `${props.id} . ${props.title}[${props.completed}]`);
+const newTitle = computed(() => printTodoItem(props.id, props.title, props.completed));
 
 function handleChange(event){
     emit('todoItemCompleted', event.target.checked);

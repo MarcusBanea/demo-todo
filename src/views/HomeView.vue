@@ -1,9 +1,9 @@
 <script setup>
-import TodoList from '../components/TodoList.vue';
+import PageContainer from '../components/PageContainer.vue';
 </script>
 
 <template>
     <suspense>
-        <TodoList />
+        <PageContainer title="Hello there" />
     </suspense>
 </template>

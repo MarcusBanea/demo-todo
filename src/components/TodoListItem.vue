@@ -1,11 +1,28 @@
 <script setup>
-defineProps({
+import { computed } from "@vue/runtime-core";
+
+//date intrare - proprietati
+//by default - toate props sunt reactive!!
+//defineProps() ~= reactive()
+const props = defineProps({
     id: Number,
     title: String,
     completed: Boolean
-})
+});
 
-let secretId = false;
+let secretId = true;
+
+//date iesire - evenimente
+const emit = defineEmits(['todoItemDeleted', 'todoItemCompleted']);
+
+//computed este reactive!!
+//monitorizeaza, si utilizam automat valorile actuale
+//completed il modificam in afara, dar valoarea noua nu se intoarce :(
+const newTitle = computed(() => `${props.id} . ${props.title}[${props.completed}]`);
+
+function handleChange(event){
+    emit('todoItemCompleted', event.target.checked);
+}
 
 </script>
 
@@ -14,19 +31,19 @@ let secretId = false;
         <div class="grid-item-id">
             <p>{{id}}</p>
         </div>
-        <input class="grid-item-checkbox" type="checkbox" :checked="completed" />
+        <input class="grid-item-checkbox" type="checkbox" :checked="completed " @change="handleChange" />
         <div class="grid-item-title">
-            <p>{{ title }}</p>
+            <p>{{ newTitle }}</p>
         </div>
-        <button>Delete</button>
+        <button @click="$emit('todoItemDeleted')">Delete</button>
     </div>
 
     <div v-else class="grid-container grid-container-columns-dim-no-id">
-        <input class="grid-item-checkbox" type="checkbox" :checked="completed" />
+        <input class="grid-item-checkbox" type="checkbox" :checked="completed " @change="handleChange" />
         <div class="grid-item-title">
-            <p>{{ title }}</p>
+            <p>{{ newTitle }}</p>
         </div>
-        <button>Delete</button>
+        <button @click="$emit('todoItemDeleted')">Delete</button>
     </div>
 </template>
 

@@ -1,17 +1,98 @@
 <script setup>
 
+import { reactive, ref, watch } from 'vue';
 import TodoListItem from './TodoListItem.vue';
 
-
 const response = await fetch('https://jsonplaceholder.typicode.com/todos');
-const todos = await response.json();
-const nameVar = "def";
+let todos = await response.json();
+todos = todos.slice(0, 10);
 
-let secretId = false;
+//variabila reactiva (prima varianta)
+const reactiveTodos = ref(todos);
+//reactiveTodos.value
+//in script trebuie .value
+//in template NU trebuie .value
 
+//variabila reactiva (a doua varianta)
+//proxy pe tot obiectul, nu pe fiecare element
+
+const counter = reactive({
+    deleted: 0,
+    updated: 0
+});
+
+
+//destructurare => nu mai este reactive!!
+//chiar daca in syntaxa folosim = reactive({})
+//...toRefs(counter) ? (solves some problems:
+//building objects based on other objects data
+const counter2 = {
+    ...counter,
+    total: 0
+};
+
+/*
+//extragerea unui singur element elimina reactivitatea!!
+function incDel(deleted){
+    deleted++;
+}
+incDel(counter.deleted)
+*/
+
+//dorim sa monitorizam modificarea unui element
+//const counter = ref(0);
+
+//putem monitoriza intregul ref
+//sau doar un element (reactive)
+//watch(counter, (newValue, oldValue) => {
+watch(() => counter.updated, (newValue, oldValue) => {
+    console.log(`Counter updated ${oldValue} -> ${newValue}`);
+})
+
+
+function handleTodoItemDeleted(todoItemId){
+    //console.log(`item deleted: ${todoItemId}`);
+    reactiveTodos.value = reactiveTodos.value.filter(item => item.id !== todoItemId);
+    //console.log(reactiveTodos.value);
+    //proxy = reactive things, usefull
+    counter.deleted++;
+    //counter.value++;
+    //nu e necesar sa folosim .value
+}
+
+function handleTodoItemCompleted(todoItemId, completed){
+    //actualizarea valorii lui completed
+    //mapping pentru a returna valorile array-ului
+    //si totodata, pentru obiectul curent, sa actualizam completed
+    reactiveTodos.value = reactiveTodos.value.map(todo => {
+        if(todo.id === todoItemId) {
+            return {
+                ...todo,
+                completed: completed
+            }
+        }
+        else {
+            return todo;
+        }
+
+    });
+    console.log(`item completed: ${todoItemId} >> ${completed}`);
+    counter.updated++;
+    //counter.value++;
+}
+
+
+let secretId = true;
 </script>
 
 <template>
+    <!--
+    <p style="text-align: center;">
+        Deleted items: {{counter.deleted}}
+        <br>
+        Changed items: {{counter.updated}}
+    </p>
+    -->
     <div>
         <div v-if="secretId === false" class="grid-container grid-container-columns-dim">
             <div id="grid-item-id-text">
@@ -40,19 +121,16 @@ let secretId = false;
             </div> 
         </div>
 
-
         <TodoListItem 
-            v-for="todo of todos"
+            v-for="todo of reactiveTodos"
             :key="todo.id"
             :id="todo.id"
             :title="todo.title"
             :completed="todo.completed"
+            @todo-item-completed="completed => handleTodoItemCompleted(todo.id, completed)"
+            @todo-item-deleted="handleTodoItemDeleted(todo.id)"
         />
     </div>
-
-    <ul>
-        
-    </ul>
 </template>
 
 <style scoped>

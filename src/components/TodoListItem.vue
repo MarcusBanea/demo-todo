@@ -27,7 +27,7 @@ function handleChange(event){
 }
 
 
-let secretId = true;
+let secretId = false;
 </script>
 
 <template>

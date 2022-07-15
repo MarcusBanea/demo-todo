@@ -1,7 +1,8 @@
 <script setup>
 
-import { reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import TodoListItem from './TodoListItem.vue';
+import AddTodoItemVue from './AddTodoItem.vue';
 
 const response = await fetch('https://jsonplaceholder.typicode.com/todos');
 let todos = await response.json();
@@ -15,6 +16,8 @@ const reactiveTodos = ref(todos);
 
 //variabila reactiva (a doua varianta)
 //proxy pe tot obiectul, nu pe fiecare element
+
+let nextTodoId = reactiveTodos.value.length + 1;
 
 const counter = reactive({
     deleted: 0,
@@ -89,29 +92,35 @@ function handleTodoItemCompleted(todoItemId, completed){
     //counter.value++;
 }
 
+function handleTodoItemAdded(todoTitle, todoCompleted){
+    console.log(`Hello there: ${todoTitle} ---> ${todoCompleted}`);
+    reactiveTodos.value.push({
+        id: nextTodoId++,
+        title: todoTitle,
+        completed: todoCompleted
+    });
+}
+
+
 const checkbox = ref(true);
 
 watch(checkbox, newValue => {
     console.log(`checkbox: ${newValue}`)
 });
 
-let secretId = true;
+
+let secretId = false;
 </script>
 
 <template>
-    <!--
-    <p style="text-align: center;">
-        Deleted items: {{counter.deleted}}
-        <br>
-        Changed items: {{counter.updated}}
-    </p>
-    -->
-
-    <!-- 2-way data binding -->
-
     <input type ="checkbox" v-model="checkbox" /> 
 
     <div>
+    
+        <AddTodoItemVue 
+            @todo-item-added="handleTodoItemAdded"
+        />
+
         <div v-if="secretId === false" class="grid-container grid-container-columns-dim">
             <div id="grid-item-id-text">
                 Id

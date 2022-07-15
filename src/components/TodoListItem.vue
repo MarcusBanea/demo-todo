@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "@vue/runtime-core";
+import { computed, onMounted, ref } from "@vue/runtime-core";
 
 //date intrare - proprietati
 //by default - toate props sunt reactive!!
@@ -10,7 +10,6 @@ const props = defineProps({
     completed: Boolean
 });
 
-let secretId = true;
 
 //date iesire - evenimente
 const emit = defineEmits(['todoItemDeleted', 'todoItemCompleted']);
@@ -24,6 +23,8 @@ function handleChange(event){
     emit('todoItemCompleted', event.target.checked);
 }
 
+
+let secretId = true;
 </script>
 
 <template>

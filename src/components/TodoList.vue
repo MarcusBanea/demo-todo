@@ -44,10 +44,18 @@ incDel(counter.deleted)
 
 //putem monitoriza intregul ref
 //sau doar un element (reactive)
+//structura: 
+    //prima parte: valoarea se modifica
+    //a doua parte: functia apelata cand valorea se modifica
 //watch(counter, (newValue, oldValue) => {
 watch(() => counter.updated, (newValue, oldValue) => {
     console.log(`Counter updated ${oldValue} -> ${newValue}`);
 })
+
+//echivalent la () => counter.updated este:
+function getUpdatedCounter(){
+    return counter.updated;
+}
 
 
 function handleTodoItemDeleted(todoItemId){
@@ -81,6 +89,11 @@ function handleTodoItemCompleted(todoItemId, completed){
     //counter.value++;
 }
 
+const checkbox = ref(true);
+
+watch(checkbox, newValue => {
+    console.log(`checkbox: ${newValue}`)
+});
 
 let secretId = true;
 </script>
@@ -93,6 +106,11 @@ let secretId = true;
         Changed items: {{counter.updated}}
     </p>
     -->
+
+    <!-- 2-way data binding -->
+
+    <input type ="checkbox" v-model="checkbox" /> 
+
     <div>
         <div v-if="secretId === false" class="grid-container grid-container-columns-dim">
             <div id="grid-item-id-text">
